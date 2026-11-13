@@ -310,6 +310,3 @@ Tests:       36 passed, 36 total
 
 For a detailed analysis of component boundaries, failure scenarios, concurrency patterns, and trade-off justifications, refer to [ARCHITECTURE.md](ARCHITECTURE.md).
 
-
-
-
