@@ -1,0 +1,64 @@
+const APPLICATION_STATES = {
+  RECEIVED: 'RECEIVED',
+  ENRICHING: 'ENRICHING',
+  EVALUATING: 'EVALUATING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+  MANUAL_REVIEW: 'MANUAL_REVIEW',
+  FAILED: 'FAILED'
+};
+
+const TERMINAL_STATES = new Set([
+  APPLICATION_STATES.APPROVED,
+  APPLICATION_STATES.REJECTED
+]);
+
+const VALID_TRANSITIONS = {
+  [APPLICATION_STATES.RECEIVED]: [
+    APPLICATION_STATES.ENRICHING,
+    APPLICATION_STATES.FAILED
+  ],
+  [APPLICATION_STATES.ENRICHING]: [
+    APPLICATION_STATES.EVALUATING,
+    APPLICATION_STATES.FAILED
+  ],
+  [APPLICATION_STATES.EVALUATING]: [
+    APPLICATION_STATES.APPROVED,
+    APPLICATION_STATES.REJECTED,
+    APPLICATION_STATES.MANUAL_REVIEW,
+    APPLICATION_STATES.FAILED
+  ],
+  [APPLICATION_STATES.MANUAL_REVIEW]: [
+    APPLICATION_STATES.APPROVED,
+    APPLICATION_STATES.REJECTED,
+    APPLICATION_STATES.FAILED
+  ],
+  [APPLICATION_STATES.FAILED]: [
+    APPLICATION_STATES.ENRICHING,
+    APPLICATION_STATES.EVALUATING
+  ],
+  [APPLICATION_STATES.APPROVED]: [],
+  [APPLICATION_STATES.REJECTED]: []
+};
+
+class InvalidStateTransitionError extends Error {
+  constructor(fromState, toState, trackingNumber = '') {
+    super(
+      `Illegal state transition from '${fromState}' to '${toState}'${
+        trackingNumber ? ` for application [${trackingNumber}]` : ''
+      }.`
+    );
+    this.name = 'InvalidStateTransitionError';
+    this.statusCode = 409;
+    this.fromState = fromState;
+    this.toState = toState;
+  }
+}
+
+module.exports = {
+  APPLICATION_STATES,
+  TERMINAL_STATES,
+  VALID_TRANSITIONS,
+  InvalidStateTransitionError
+};
+
